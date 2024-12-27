@@ -19,7 +19,7 @@ This project is a testing framework built with Playwright and TypeScript, featur
    git clone <repository-url>
    cd <project-directory>
 
-2.Install dependencies:
+2. Install dependencies:
 ```npm install```
 
 3. Set up your .env file (optional): Create a .env file in the root directory to define your environment variables:
