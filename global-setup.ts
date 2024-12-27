@@ -1,21 +1,25 @@
-import { Browser, chromium, Page, expect } from '@playwright/test';
+import { chromium, FullConfig } from '@playwright/test';
+import fs from 'fs';
 
-async function globalSetup() {
-  const browser: Browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext();
-  const page: Page = await context.newPage();
+async function globalSetup(config: FullConfig) {
+  const storageFilePath = './dev-auth.json';
 
-  await page.goto('https://demoblaze.com/');
-  await page.locator('#login2').click();
-  await page.locator('#loginusername').fill('test');
-  await page.locator('#loginpassword').fill('test');
-  await page.locator('[onclick="logIn()"]').click();
-  await expect(page.locator('#logout2')).toBeVisible({ timeout: 30000 });
+  if (!fs.existsSync(storageFilePath)) {
+    const browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext();
+    const page = await context.newPage();
 
-  // save the satte of the webpage
-  await page.context().storageState({ path: './LoginAuth.json' });
+    const baseURL = config.projects[0].use?.baseURL || 'https://demoblaze.com/';
+    await page.goto(baseURL);
+    await page.locator('#login2').click();
+    await page.locator('#loginusername').fill('test');
+    await page.locator('#loginpassword').fill('test');
+    await page.locator('[onclick="logIn()"]').click();
+    await page.waitForSelector('#logout2', { timeout: 30000 });
 
-  await browser.close();
+    await context.storageState({ path: storageFilePath });
+    await browser.close();
+  }
 }
 
 export default globalSetup;

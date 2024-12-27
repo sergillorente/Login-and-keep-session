@@ -1,11 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test } from '../src/fixtures/sharedContext';
+import { expect } from '@playwright/test';
 
-test('Login', async ({ page }) => {
-  await page.goto('https://demoblaze.com/');
-  await expect(page.locator('#logout2')).toBeVisible();
+test('Shared Context Test', async ({ sharedContext }) => {
+  const page = await sharedContext.newPage();
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Log out' })).toBeVisible();
 });
 
-test('Login - 2', async ({ page }) => {
-  await page.goto('https://demoblaze.com/');
-  await expect(page.locator('#logout2')).toBeVisible();
+test('Login - 2', async ({ sharedContext }) => {
+  const page = await sharedContext.newPage();
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Welcome test' })).toBeVisible();
 });
