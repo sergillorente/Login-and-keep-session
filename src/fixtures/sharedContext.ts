@@ -1,13 +1,13 @@
-import { test as base, chromium } from '@playwright/test';
+import { test as base } from '@playwright/test';
+import { createAuthenticatedContext } from '../utils/authHelpers';
 
 const test = base.extend<{ sharedContext: any }>({
   sharedContext: async ({}, use) => {
-    const browser = await chromium.launch();
-    const context = await browser.newContext({
-      storageState: './dev-auth.json',
-    });
+    const environment = process.env.ENV || 'dev';
+    const storageStatePath = `./${environment}-auth.json`;
+    const context = await createAuthenticatedContext(storageStatePath);
     await use(context);
-    await browser.close();
+    await context.browser()?.close();
   },
 });
 
